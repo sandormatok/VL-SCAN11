@@ -17,69 +17,35 @@
 package com.google.android.gms.oem.raktar.atvetel;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.CommonStatusCodes;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import static android.R.attr.id;
 import static com.google.android.gms.oem.raktar.atvetel.BarcodeCaptureActivity.barcode3;
-import static com.google.android.gms.oem.raktar.atvetel.Config.DATA_RAKTAR_KESZLET_URL;
-import static com.google.android.gms.oem.raktar.atvetel.Config.KEY_VEVONEV;
 
-
-import static com.google.android.gms.oem.raktar.atvetel.R.id.tableRow2;
-import static com.google.android.gms.oem.raktar.atvetel.R.id.tableRow61;
-import static com.google.android.gms.vision.barcode.Barcode.WIFI;
-import static java.util.logging.Logger.global;
-
-
-import android.view.KeyEvent;
-
-
-/**
- * Main activity demonstrating how to pass extra parameters to an activity that
- * reads barcodes.
- */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     // use a compound button so either checkbox or switch widgets work.
@@ -114,17 +80,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String m_Text = "";
     private String manualInput = "NO";
 
-     /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
+    private String adminUsers[] = {"885301", "885201", "885101", "885001"};
+    private String adminPass[] = {"908990", "808989", "808988", "808987"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//notitle
+
+        //notitle
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
@@ -144,9 +107,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tableRow52 = (TextView) findViewById(R.id.table52);
         tableRow61 = (TextView) findViewById(R.id.table61);
         tableRow62 = (TextView) findViewById(R.id.table62);
-//        akcioValue = (TextView) findViewById(R.id.akcioValue);
 
-        tableRow22.setText("TIPP" +"\nHasználja telefonja hangerő fel/le gombjait a vakku bekapcsolásához beolvasás közben!");
+        //tableRow22.setText("TIPP" +"\nHasználja telefonja hangerő fel/le gombjait a vakku bekapcsolásához beolvasás közben!");
 
 
         //autoFocus = (CompoundButton) findViewById(R.id.auto_focus);
@@ -167,11 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //toptextView.setText("Vevő: " + vevonev);
             toptextView.setText(vevonev);
         }
-/*
-        if(intent.hasExtra("globaltourchmode")) {
-            globaltorchMode = getIntent().getExtras().getBoolean("globaltourchmode");
-        }
-*/
+
         if(intent.hasExtra("adminMode")) {
             Boolean adminMode = getIntent().getExtras().getBoolean("adminMode");
                 if(adminMode) {
@@ -188,9 +146,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.read_barcode).setOnClickListener(this);
         findViewById(R.id.enter_barcode).setOnClickListener(this);
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 //>>>Ez jó leket hogy hova kattint...     de inkább feljebb kell több view-et definiálni
@@ -288,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //statusMessage.setText(barcode2.displayValue);
                     //statusMessage.setText(barcode3);
                     getData();
-                    //getakcioData();
+
                     Log.d(TAG, "Vonalkód (MainActivity) " + barcode3);
                 } else {
                     tableRow22.setText(R.string.barcode_failure);
@@ -476,133 +431,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-    private void getakcioData() {
-        String id = globalAroszt;
-         url = Config.DATA_RAKTAR_AKCIO_URL + id + "&arkat=" + globalAroszt;
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //        loading.dismiss();
-                showJSON2
-                        (response);
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
-
-
-    private void showJSON2(String response) {
-
-        String marka = "";
-        String marka1 = "";
-        String termek = "";
-        String termek1 = "";
-        Double akcar = 0.00;
-        Double akcar1 = 0.00;
-//JSONArray resultArray;
-
-        /* String kinalo = "";
-        String karton = "";
-        String raklap = ""; */
-
-//Válasz adatok tárolása
-        try {
-
-            JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(Config.JSON_ARRAY);
-
-            JSONObject termekData1 = result.getJSONObject(0);
-            marka = termekData1.getString(Config.KEY_MARKA);
-            termek = termekData1.getString(Config.KEY_TERMEK);
-            akcar = termekData1.getDouble(Config.KEY_AKCAR);
-
-            JSONObject termekData2 = result.getJSONObject(1);
-            marka1 = termekData2.getString(Config.KEY_MARKA);
-            termek1 = termekData2.getString(Config.KEY_TERMEK);
-            akcar1 = termekData2.getDouble(Config.KEY_AKCAR);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        //Toast toast= Toast.makeText(getApplicationContext(),marka + "; " + termek + "; " + akcar + "; " + marka1 + "; " + termek1 + "; " + akcar1, Toast.LENGTH_LONG);
-        //toast.setGravity(Gravity.CENTER,0,0); toast.show();
-
-        //toptextView.setText(marka + ", " + marka2);
-        //tableRow22.setText(termek);
-        //tableRow32.setText(akcar);
-        //tableRow42.setText(marka);
-        //tableRow52.setText(marka2);
-
-        Double afa = 1.27;
-
-        Double brutto = 0.00;
-
-        brutto = akcar1 * (afa + 100) / 100;
-        //barcodeValue.setTextColor(0xFF00DDFF);
-
-
-        akcbruttoRound = String.format("%.2f", brutto);
-        akcnettoRound = String.format("%.2f", akcar1);
-
-
-
-        akcioValue.setText(marka + " / " + termek + "\n" + akcnettoRound + " Ft (Nettó) / " + akcbruttoRound + " Ft (Bruttó)");
-        akcioValue.setSelected(true);
-    }
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Main Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-
     @Override
     public void onBackPressed() {
         finish();
         super.onBackPressed();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
 }

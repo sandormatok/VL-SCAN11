@@ -150,40 +150,6 @@ public class LoginActivity extends AppCompatActivity {
             alert.show();
         }
 
-/*
-        if (!wifiManager.isWifiEnabled()){
-            allowLogin = false;
-            View view = View.inflate(this, R.layout.alert_dialog_net, null);
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle("Csatlakozhatok a VL-Euro Kft. hálózatára?");
-            // alert.setMessage("Message");
-            final WifiManager wifiManager2=(WifiManager)getSystemService(WIFI_SERVICE);
-
-            alert.setPositiveButton("Kilépés", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    finish();
-                    System.exit(0);
-                }
-            });
-
-            alert.setNegativeButton("Csatlakozás",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            wifiManager2.setWifiEnabled(true);
-
-                            int netId = wifiManager2.addNetwork(wifiConfig);
-                            wifiManager2.disconnect();
-                            wifiManager2.enableNetwork(netId, true);
-                            wifiManager2.reconnect();
-                            allowLogin = true;
-                        }
-                    });
-
-            alert.show();
-
-        }
-*/
-
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
 
@@ -222,12 +188,6 @@ public class LoginActivity extends AppCompatActivity {
         showDialog();
         globalVevokod = vevokod;
         globalPassword = password;
-
-
-
-
-
-
 
         if(!adminMode){
             getData2();
@@ -348,6 +308,11 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.dismiss();
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 
 
 

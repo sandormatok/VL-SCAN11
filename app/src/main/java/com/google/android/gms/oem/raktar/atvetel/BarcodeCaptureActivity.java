@@ -26,8 +26,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,13 +41,10 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.google.android.gms.oem.raktar.atvetel.ui.camera.CameraSource;
 import com.google.android.gms.oem.raktar.atvetel.ui.camera.CameraSourcePreview;
 
@@ -59,10 +54,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
-
-import static android.hardware.Camera.Parameters.FLASH_MODE_ON;
-import static com.google.android.gms.oem.raktar.atvetel.R.id.toptextView;
-
+import java.util.Random;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -91,17 +83,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
 
+    int n = 0;
+
     public static Barcode barcode = null;
     public static String barcode3;
     public boolean globaltourchMode;
 
     static int counter = 0;
     private static final int RC_BARCODE_CAPTURE = 9001;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
 
     /**
@@ -120,6 +109,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
 
 
+
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
@@ -132,14 +122,16 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
+        //Random rand = new Random();
+        //int n = rand.nextInt(2);
 
-        //Snackbar.make(mGraphicOverlay, "Érintsd meg a vonalkódot a kiválasztáshoz,\"\\n\" Két ujjal pedig kicsinyíthetsz/nagyíthatsz!",
-        //       Snackbar.LENGTH_LONG)
-        //      .show();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+       // if(n==0) {
+
+            Snackbar.make(mGraphicOverlay, "Irányítsa a kamerát a vonalkódra, kb 40cm-ről!\n\nA hangerőszabályzó gombokkal bekapcsolhatja a vakkut!",
+                    Snackbar.LENGTH_LONG)
+                    .show();
+
     }
 
     /**
@@ -233,6 +225,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 ActivityCompat.requestPermissions(thisActivity, permissions,
                         RC_HANDLE_CAMERA_PERM);
             }
@@ -270,8 +264,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         // graphics for each barcode on screen.  The factory is used by the multi-processor to
         // create a separate tracker instance for each barcode.
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeDetector barcodeDetector2 = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
+        //BarcodeDetector barcodeDetector2 = new BarcodeDetector.Builder(context).build();
+        //BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
 
 
 //>>>Multiprocessor, ha kell... ki kellene próbálni újra
@@ -348,41 +342,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
                 .build();
 
     }
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("BarcodeCapture Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @                   Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
 
 
     /**

@@ -44,16 +44,16 @@
             android:value="barcode" />
 
         <activity
-            android:name="com.google.android.gms.oem.raktar.atvetel.MainActivity"
+            android:name="com.vlscan.raktar.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
         </activity>
         <activity
-            android:name="com.google.android.gms.oem.raktar.atvetel.BarcodeCaptureActivity"
+            android:name="com.vlscan.raktar.BarcodeCaptureActivity"
             android:label="Válassz ki egy vonalkódot..."
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name="com.google.android.gms.oem.raktar.atvetel.LoginActivity"
+            android:name="com.vlscan.raktar.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
             <intent-filter>

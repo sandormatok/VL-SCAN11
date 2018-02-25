@@ -28,6 +28,7 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
@@ -51,6 +52,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "BarcodeMain";
     private String m_Text = "";
     private String manualInput = "NO";
-    boolean devMode = false;
+    boolean devMode = true;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //getSupportActionBar().setTitle("Raktári Készletellenörző");
 
         setContentView(R.layout.activity_main);
-          TextView toptextView = (TextView) findViewById(R.id.toptextView);
+        TextView toptextView = (TextView) findViewById(R.id.toptextView);
 
         //tablerows
         tableRow02 = (TextView) findViewById(R.id.table02);
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         //MANUAL INPUT
         if (v.getId() == R.id.enter_barcode) {
-          AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Írd be a vonalkódot!");
 
             // Set up the input
@@ -205,7 +207,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     final MediaPlayer mp = MediaPlayer.create(this, R.raw.sound3);
                     mp.start();
 
-                    barcode3 = data.getStringExtra("barcode3");
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    barcode3 = barcode.displayValue;
                     getData();
                     Log.d(TAG, "Vonalkód (MainActivity) " + barcode3);
                 } else {
@@ -236,20 +239,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ssid = "NON";
         }
 
-            if (!ssid.equals("\"VLEURO\"")) {
+        if (!ssid.equals("\"VLEURO\"")) {
 
-                if (devMode) {
-                } else {
+            if (devMode) {
+            } else {
 
-                    tableRow22.setText("NEM CSATLAKOZIK A \"VLEURO\" WIFI HÁLÓZATHOZ!");
-                    tableRow22.setBackgroundColor(Color.RED);
-                    tableRow12.setText("");
-                    tableRow32.setText("");
-                    tableRow42.setText("");
-                    tableRow52.setText("");
-                    return;
+                tableRow22.setText("NEM CSATLAKOZIK A \"VLEURO\" WIFI HÁLÓZATHOZ!");
+                tableRow22.setBackgroundColor(Color.RED);
+                tableRow12.setText("");
+                tableRow32.setText("");
+                tableRow42.setText("");
+                tableRow52.setText("");
+                return;
 
-                }
+            }
         }
 
         String id = barcode3;
@@ -259,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             manualInput = "NO";
         }
 
-            url = Config.DATA_RAKTAR_KESZLET_URL + id + "&vkod="+globalvevoKod;
+        url = Config.DATA_RAKTAR_KESZLET_URL + id + "&vkod="+globalvevoKod;
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
@@ -313,9 +316,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String akciosstring;
 
         if(akcios) {
-             akciosstring = "igen";
+            akciosstring = "igen";
         } else {
-             akciosstring = "nem";
+            akciosstring = "nem";
         }
 
         if (marka.equals("null")) {
@@ -328,6 +331,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tableRow52.setText("");
 
         } else {
+
+            Toast.makeText(MainActivity.this, marka, Toast.LENGTH_LONG).show();
+
+
             tableRow22.setBackgroundColor(0xFF0C4593);
             Double brutto = 0.00;
             brutto = netto * (afa + 100) / 100;

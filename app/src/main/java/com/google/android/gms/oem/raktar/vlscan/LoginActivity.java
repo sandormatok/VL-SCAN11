@@ -31,6 +31,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -162,7 +163,9 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == RC_QRCODE_LOGIN) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
-                    barcode3 = data.getStringExtra("barcode3");
+                    //barcode3 = data.getStringExtra("barcode3");
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    barcode3 = barcode.displayValue;
                     qrcodeLogin = true;
                     maradjonbeBox.setChecked(true);
 
@@ -234,8 +237,8 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     //Todo: meg kell nezni, hogy van-e error message mielott tostringet hivsz ra....
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(LoginActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    public void onErrorResponse(VolleyError error) { //todo: kiakad, ha null az errormessage
+                      //  Toast.makeText(LoginActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
         RequestQueue requestQueue = Volley.newRequestQueue(this);

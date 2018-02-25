@@ -133,8 +133,8 @@ public class CameraSource {
     // These values may be requested by the caller.  Due to hardware limitations, we may need to
     // select close, but not exactly the same values for these.
     private float mRequestedFps = 30.0f;
-    private int mRequestedPreviewWidth = 1600;
-    private int mRequestedPreviewHeight = 1200;
+    private int mRequestedPreviewWidth = 1024;
+    private int mRequestedPreviewHeight = 768;
 
 
     private String mFocusMode = null;
@@ -905,9 +905,9 @@ public class CameraSource {
      */
     private static List<SizePair> generateValidPreviewSizeList(Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
-        List<android.hardware.Camera.Size> supportedPreviewSizes =
+        List<Camera.Size> supportedPreviewSizes =
                 parameters.getSupportedPreviewSizes();
-        List<android.hardware.Camera.Size> supportedPictureSizes =
+        List<Camera.Size> supportedPictureSizes =
                 parameters.getSupportedPictureSizes();
         List<SizePair> validPreviewSizes = new ArrayList<>();
         for (android.hardware.Camera.Size previewSize : supportedPreviewSizes) {

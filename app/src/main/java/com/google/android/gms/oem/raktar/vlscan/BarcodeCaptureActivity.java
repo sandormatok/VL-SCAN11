@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +42,11 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -50,7 +57,13 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+
+import static com.google.android.gms.oem.raktar.vlscan.LoginActivity.MY_PREFS_NAME;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -87,6 +100,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public boolean qrcodeLogin = false;
     private static final int RC_QRCODE_LOGIN = 9001;
     private static final int RC_BARCODE_CAPTURE = 9001;
+
+    private String globalVevokod, globalPassword, globalVevonev = "";
+
 
     static int counter = 0;
     int tippCount = 1; //TODO: váltakozó tippek
@@ -133,9 +149,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     .show();
 
             //TODO: Váltakozó tippeket ide:
-            Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
-                    Snackbar.LENGTH_LONG)
-                    .show();
+
         }
 
     }
@@ -514,9 +528,109 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     @Override
     public void onBarcodeDetected(Barcode barcode) {
 
-
-
-
         //do something with barcode data returned
+
+        //SHARED PREFERENCES
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String prefsVevokod = prefs.getString("vevokod", "");
+
+        barcode3 = barcode.displayValue;
+
+        getData();
+
+
+
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Snackbar.make(mGraphicOverlay, "Álló (ORIENTATION_PORTRAIT)",
+                    Snackbar.LENGTH_LONG)
+                    .show();
+        } else {
+            Snackbar.make(mGraphicOverlay, "Fekvő (ORIENTATION_LANDSCAPE)",
+                    Snackbar.LENGTH_LONG)
+                    .show();
+        }
+
+
+
     }
+
+    //*** BARCODE READER GET DATA
+
+    private void getData() {
+
+        String id = barcode3;
+        String url = Config.DATA_RAKTAR_KESZLET_URL + id + "&vkod="+0120401;
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //        loading.dismiss();
+                showJSON(response);
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+        //VONALKOD
+        //tableRow02.setText(id);
+    }
+
+
+    //*** BARCODE READER SHOW JSON
+    private void showJSON(String response) {
+
+        String marka = "";
+        String termek = "";
+        String ar = "";
+        String menny = "";
+        String vevonev= "";
+        Double netto = 0.00;
+        Double afa = 0.00;
+        Boolean akcios = false;
+
+        //Válasz adatok tárolása
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray result = jsonObject.getJSONArray(Config.JSON_ARRAY);
+            JSONObject termekData = result.getJSONObject(0);
+            marka = termekData.getString(Config.KEY_MARKA);
+            termek = termekData.getString(Config.KEY_TERMEK);
+            menny = termekData.getString(Config.KEY_KESZLET);
+            netto = termekData.getDouble(Config.KEY_NETTO);
+            afa = termekData.getDouble(Config.KEY_AFA);
+            akcios = termekData.getBoolean(Config.KEY_AKCIO);
+            vevonev = termekData.getString(Config.KEY_VEVONEV);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String akciosstring;
+
+        if(akcios) {
+            akciosstring = "igen";
+        } else {
+            akciosstring = "nem";
+        }
+
+        if (marka.equals("null")) {
+            // snackbar: nincs adat
+        } else {
+            Double brutto = 0.00;
+            brutto = netto * (afa + 100) / 100;
+            String bruttoRound = String.format("%.2f", brutto);
+            String nettoRound = String.format("%.2f", netto);
+
+
+           Toast.makeText(BarcodeCaptureActivity.this, "Termék: " + marka + " - " + termek + " Ft,   Nettó: " + netto + ",   Raktáron: " + menny + " db", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+
 }

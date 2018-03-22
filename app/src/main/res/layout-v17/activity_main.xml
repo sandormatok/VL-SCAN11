@@ -112,7 +112,6 @@
                 android:background="#0c4593"
                 android:textColor="#ffffff"
                 android:textSize="24sp"
-
                 android:textStyle="normal|bold" />
 
         </TableRow>

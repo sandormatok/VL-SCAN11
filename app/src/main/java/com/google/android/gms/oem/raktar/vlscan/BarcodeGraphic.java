@@ -32,9 +32,9 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
     private int mId;
 
     private static final int COLOR_CHOICES[] = {
+            Color.BLUE,
             Color.CYAN,
-            Color.LTGRAY,
-            Color.WHITE
+            Color.GREEN
     };
 
     private static int mCurrentColorIndex = 0;
@@ -51,12 +51,12 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
 
         mRectPaint = new Paint();
         mRectPaint.setColor(selectedColor);
-        mRectPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mRectPaint.setStrokeWidth(40.0f);
+        mRectPaint.setStyle(Paint.Style.STROKE);
+        mRectPaint.setStrokeWidth(4.0f);
 
         mTextPaint = new Paint();
-        mTextPaint.setColor(Color.BLACK);g789
-        mTextPaint.setTextSize(24.0f);8ÖT
+        mTextPaint.setColor(selectedColor);
+        mTextPaint.setTextSize(36.0f);
     }
 
     public int getId() {
@@ -94,14 +94,11 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
         RectF rect = new RectF(barcode.getBoundingBox());
         rect.left = translateX(rect.left);
         rect.top = translateY(rect.top);
-        rect.right = translateX(rect.right+300);
+        rect.right = translateX(rect.right);
         rect.bottom = translateY(rect.bottom);
         canvas.drawRect(rect, mRectPaint);
 
         // Draws a label at the bottom of the barcode indicate the barcode value that was detected.
-        canvas.drawText(barcode.rawValue, rect.left, rect.top, mTextPaint);
-        canvas.drawText("Márka: Teszt márka", rect.left, rect.top+24, mTextPaint);
-        canvas.drawText("Termék: Teszt termék", rect.left, rect.top+48, mTextPaint);
-        canvas.drawText("Ár: 100 Ft Nettó / 127 Ft Bruttó", rect.left, rect.top+72, mTextPaint);
+        canvas.drawText(barcode.rawValue, rect.left, rect.bottom, mTextPaint);
     }
 }
